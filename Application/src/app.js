@@ -3,7 +3,7 @@ import "dotenv/config";
 import { readdirSync } from "fs";
 
 const client = new Client({
-  intents: ["GUILDS"], //* istedigimiz instentsler icin array kullanabiliriz
+  intents: ["GUILDS", "GUILD_MESSAGES"], //* istedigimiz instentsler icin array kullanabiliriz
   presence: {
     status: "dnd", //do not disturb
     //activities: [{ name: "müconun deliğiyle", type: "PLAYING" }],
