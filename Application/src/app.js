@@ -1,29 +1,25 @@
 import { Client } from "discord.js";
 import "dotenv/config";
+import { readdirSync } from "fs";
 
 const client = new Client({
-  intents: ["GUILDS"], //*istedigimiz instentsler icin array kullanabiliriz
+  intents: ["GUILDS"], //* istedigimiz instentsler icin array kullanabiliriz
   presence: {
-    status: "dnd",
+    status: "dnd", //do not disturb
     //activities: [{ name: "müconun deliğiyle", type: "PLAYING" }],
   },
 });
 
 client.login(process.env.token);
 
-client.addListener("ready", () => {
-  // veya client.on() şeklinde de kullanılabilir
-  /* bazi islemler client hazir olunca yapilabilir
-  örnegin presence degistirme */
+/* ready gibi tum eventler app.js altinda olsa cok karmasik
+olurdu, bu sebeple burada bir event loader yapip events klasoru
+icindeki dosyalar cagrilacak */
+//* Event loader
+readdirSync("../events").forEach(async (file) => {
+  //! fonksiyon asenkron olmaliki await calisabilsin
 
-  console.log("bot hazır!!");
-
-  const presenceList = [
-    { name: "müconun deliğiyle", type: "PLAYING" },
-    { name: "müconun deliğini", type: "WATCHING" },
-  ];
-  setInterval(() => {
-    const randomPresence = Math.floor(Math.random() * presenceList.length);
-    client.user.setPresence({ activities: [presenceList[randomPresence]] });
-  }, 5800);
+  const event = await import(`../events/${file}`) //* asenkron bir islem oldugundan await
+    .then((module) => module.default);
+  event(client);
 });
