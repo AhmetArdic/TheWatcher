@@ -56,9 +56,12 @@ client.on("voiceStateUpdate", (oldState, newState) => {
     const voiceChannelMembersArray = [...newMembersCollection.values()];
     voiceChannelMembersArray.forEach((value) => {
       if (
-        enayi.includes(
-          `<@${value.user.id}>`
-        ) /* //TODO aynı şey tekrar eklenmeyecek */
+        enayi.includes(`<@${value.user.id}>`) &&
+        !enayiInVoice.some(
+          (user) =>
+            user.channelId === newState.channelId &&
+            user.tag === `<@${value.user.id}>`
+        )
       ) {
         enayiInVoice.push({
           channelId: newState.channelId,
