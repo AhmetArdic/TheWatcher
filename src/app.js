@@ -9,8 +9,7 @@ const client = new Client({
     //activities: [{ name: "müconun deliğiyle", type: "PLAYING" }],
   },
 });
-
-client.login(process.env.token);
+client.login(process.env.TOKEN);
 
 client.enayi = new Array();
 client.logChannel = new Array();
@@ -41,7 +40,7 @@ client.on("ready", () => {
 });
 
 //! messageCreate
-const prefix = process.env.prefix;
+const prefix = process.env.PREFIX;
 client.on("messageCreate", (message) => {
   if (!message.guild) return;
   if (!message.content.startsWith(prefix)) return;
