@@ -1,8 +1,7 @@
 import { Client } from "discord.js";
 import "dotenv/config";
 
-const enayiInVoice = [];
-var enayi = [];
+const enayi = [];
 
 const client = new Client({
   intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"], //* istedigimiz instentsler icin array kullanabiliriz
@@ -26,11 +25,11 @@ client.on("ready", () => {
   setInterval(() => {
     const randomPresence = Math.floor(Math.random() * presenceList.length);
     client.user.setPresence({ activities: [presenceList[randomPresence]] });
-  }, 5800);
-});
+  }, 5000);
 
-var voiceChannels = client.channels.cache.clone();
-voiceChannels.sweep((value) => !(value.type == "GUILD_VOICE"));
+  var voiceChannels = client.channels.cache.clone();
+  voiceChannels.sweep((value) => !(value.type == "GUILD_VOICE"));
+});
 
 //! messageCreate
 client.on("messageCreate", (message) => {
@@ -41,45 +40,45 @@ client.on("messageCreate", (message) => {
   }
 
   if (message.content.startsWith("!enayi")) {
-    const name = message.content.split("!enayi")[1].trim();
-    if (!enayi.includes(name)) {
-      enayi.push(name);
+    const tag = message.content.split("!enayi")[1].trim();
+    if (!enayi.some((name) => name.tag === tag)) {
+      enayi.push({
+        tag: tag,
+      });
     }
   }
 });
 
 //!voiceStateUpdate
 client.on("voiceStateUpdate", (oldState, newState) => {
-  const newMembersCollection = newState.channel?.members;
+  if (newState.channelId != oldState.channelId) {
+    let index = enayi.findIndex((v) => v.tag === `<@${newState.id}>`);
+    if (!(index == -1)) {
+      enayi[index] = {
+        ...enayi[index],
+        joinnedChannelId: newState.channelId,
+        disconnectedChannledId: oldState.channelId,
+      };
 
-  if (newMembersCollection) {
-    const voiceChannelMembersArray = [...newMembersCollection.values()];
-    voiceChannelMembersArray.forEach((value) => {
-      if (
-        enayi.includes(`<@${value.user.id}>`) &&
-        !enayiInVoice.some(
-          (user) =>
-            user.channelId === newState.channelId &&
-            user.tag === `<@${value.user.id}>`
-        )
-      ) {
-        enayiInVoice.push({
-          channelId: newState.channelId,
-          tag: `<@${value.user.id}>`,
-        });
+      if (enayi[index].joinnedChannelId == null) {
+        //çikis yapilan kisim
+        console.log(
+          `${enayi[index].tag} isimli kullanıcı <#${enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı`
+        );
+      } else if (enayi[index].disconnectedChannledId == null) {
+        // giris yapilan kisim
+        console.log(
+          `${enayi[index].tag} isimli kullanıcı <#${enayi[index].joinnedChannelId}> isimli kanala giriş yaptı`
+        );
+      } else {
+        //yer degisilen kisim
+        console.log(
+          `${enayi[index].tag} isimli kullanıcı <#${enayi[index].joinnedChannelId}> isimli kanala giriş yaptı`
+        );
+        console.log(
+          `${enayi[index].tag} isimli kullanıcı <#${enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı`
+        );
       }
-    });
-  }
-
-  console.log(enayiInVoice);
-
-  /*
-  enayi.forEach((value) => {
-    if (voiceMembers.includes(value)) {
-      console.log("enayi giriş yaptı");
-    } else {
-      console.log("enayi çıkış yaptı");
     }
-  });
-  */
+  }
 });
