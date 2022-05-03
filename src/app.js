@@ -2,7 +2,7 @@ import { Client, TextChannel } from "discord.js";
 import "dotenv/config";
 
 const enayi = [];
-var logChannel;
+const logChannel = [];
 
 function getDate() {
   const d = new Date();
@@ -52,8 +52,24 @@ client.on("ready", () => {
 client.on("messageCreate", (message) => {
   if (!message.guild) return;
 
-  if (message.content === "!logkanalı") {
-    logChannel = client.channels.cache.get(message.channelId);
+  if (message.content.startsWith("!logkanalı")) {
+    const msg = message.content.split("!logkanalı")[1].trim();
+    if (msg === "ekle") {
+      logChannel.push(message.channelId);
+      message.reply(
+        `<#${message.channelId}> text kanalı log alınmak üzere ayarlandı!!`
+      );
+    }
+
+    if (msg === "sil") {
+      let index = logChannel.indexOf(message.channelId);
+      if (index !== -1) {
+        logChannel.splice(index, 1);
+        message.reply(
+          `<#${message.channelId}> text kanalında artık log alınmayacak!!`
+        );
+      }
+    }
   }
 
   if (message.content.startsWith("!enayi")) {
@@ -77,33 +93,37 @@ client.on("voiceStateUpdate", (oldState, newState) => {
         disconnectedChannledId: oldState.channelId,
       };
 
-      if (enayi[index].joinnedChannelId == null) {
-        //çikis yapilan kisim
-        logChannel.send(
-          `${enayi[index].tag} isimli kullanıcı <#${
-            enayi[index].disconnectedChannledId
-          }> isimli kanaldan ${getDate()} tarihinde çıkış yaptı`
-        );
-      } else if (enayi[index].disconnectedChannledId == null) {
-        // giris yapilan kisim
-        logChannel.send(
-          `${enayi[index].tag} isimli kullanıcı <#${
-            enayi[index].joinnedChannelId
-          }> isimli kanala ${getDate()} tarihinde giriş yaptı`
-        );
-      } else {
-        //yer degisilen kisim
-        logChannel.send(
-          `${enayi[index].tag} isimli kullanıcı <#${
-            enayi[index].disconnectedChannledId
-          }> isimli kanaldan ${getDate()} tarihinde çıkış yaptı`
-        );
-        logChannel.send(
-          `${enayi[index].tag} isimli kullanıcı <#${
-            enayi[index].joinnedChannelId
-          }> isimli kanala ${getDate()} tarihinde giriş yaptı`
-        );
-      }
+      logChannel.forEach((value) => {
+        const channel = client.channels.cache.get(value);
+
+        if (enayi[index].joinnedChannelId == null) {
+          //çikis yapilan kisim
+          channel.send(
+            `${enayi[index].tag} isimli kullanıcı <#${
+              enayi[index].disconnectedChannledId
+            }> isimli kanaldan ${getDate()} tarihinde çıkış yaptı`
+          );
+        } else if (enayi[index].disconnectedChannledId == null) {
+          // giris yapilan kisim
+          channel.send(
+            `${enayi[index].tag} isimli kullanıcı <#${
+              enayi[index].joinnedChannelId
+            }> isimli kanala ${getDate()} tarihinde giriş yaptı`
+          );
+        } else {
+          //yer degisilen kisim
+          channel.send(
+            `${enayi[index].tag} isimli kullanıcı <#${
+              enayi[index].disconnectedChannledId
+            }> isimli kanaldan ${getDate()} tarihinde çıkış yaptı`
+          );
+          channel.send(
+            `${enayi[index].tag} isimli kullanıcı <#${
+              enayi[index].joinnedChannelId
+            }> isimli kanala ${getDate()} tarihinde giriş yaptı`
+          );
+        }
+      });
     }
   }
 });
