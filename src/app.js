@@ -4,6 +4,22 @@ import "dotenv/config";
 const enayi = [];
 var logChannel;
 
+function getDate() {
+  const d = new Date();
+
+  return `${d.getHours().toString().padStart(2, "0")}.${d
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}.${d.getSeconds().toString().padStart(2, "0")} -- ${(
+    d.getDay() + 1
+  )
+    .toString()
+    .padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")}/${d
+    .getFullYear()
+    .toString()
+    .padStart(4, "0")}`;
+}
+
 const client = new Client({
   intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"], //* istedigimiz instentsler icin array kullanabiliriz
   presence: {
@@ -64,20 +80,28 @@ client.on("voiceStateUpdate", (oldState, newState) => {
       if (enayi[index].joinnedChannelId == null) {
         //çikis yapilan kisim
         logChannel.send(
-          `${enayi[index].tag} isimli kullanıcı <#${enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı`
+          `${enayi[index].tag} isimli kullanıcı <#${
+            enayi[index].disconnectedChannledId
+          }> isimli kanaldan ${getDate()} tarihinde çıkış yaptı`
         );
       } else if (enayi[index].disconnectedChannledId == null) {
         // giris yapilan kisim
         logChannel.send(
-          `${enayi[index].tag} isimli kullanıcı <#${enayi[index].joinnedChannelId}> isimli kanala giriş yaptı`
+          `${enayi[index].tag} isimli kullanıcı <#${
+            enayi[index].joinnedChannelId
+          }> isimli kanala ${getDate()} tarihinde giriş yaptı`
         );
       } else {
         //yer degisilen kisim
         logChannel.send(
-          `${enayi[index].tag} isimli kullanıcı <#${enayi[index].joinnedChannelId}> isimli kanala giriş yaptı`
+          `${enayi[index].tag} isimli kullanıcı <#${
+            enayi[index].disconnectedChannledId
+          }> isimli kanaldan ${getDate()} tarihinde çıkış yaptı`
         );
         logChannel.send(
-          `${enayi[index].tag} isimli kullanıcı <#${enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı`
+          `${enayi[index].tag} isimli kullanıcı <#${
+            enayi[index].joinnedChannelId
+          }> isimli kanala ${getDate()} tarihinde giriş yaptı`
         );
       }
     }
