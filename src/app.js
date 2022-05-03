@@ -7,10 +7,10 @@ const logChannel = [];
 function getDate() {
   const d = new Date();
 
-  return `${d.getHours().toString().padStart(2, "0")}.${d
+  return `${d.getHours().toString().padStart(2, "0")}:${d
     .getMinutes()
     .toString()
-    .padStart(2, "0")}.${d.getSeconds().toString().padStart(2, "0")} -- ${(
+    .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")} -- ${(
     d.getDay() + 1
   )
     .toString()
