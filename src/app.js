@@ -1,24 +1,6 @@
-import { Client, TextChannel } from "discord.js";
+import { Client, MessageEmbed, Collection } from "discord.js";
+import { readdirSync } from "fs";
 import "dotenv/config";
-
-const enayi = [];
-const logChannel = [];
-
-function getDate() {
-  const d = new Date();
-
-  return `${d.getHours().toString().padStart(2, "0")}:${d
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")} -- ${(
-    d.getDay() + 1
-  )
-    .toString()
-    .padStart(2, "0")}/${(d.getMonth() + 1).toString().padStart(2, "0")}/${d
-    .getFullYear()
-    .toString()
-    .padStart(4, "0")}`;
-}
 
 const client = new Client({
   intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"], //* istedigimiz instentsler icin array kullanabiliriz
@@ -29,6 +11,16 @@ const client = new Client({
 });
 
 client.login(process.env.token);
+
+client.enayi = new Array();
+client.logChannel = new Array();
+
+//! Command Loader
+client.commands = new Collection();
+readdirSync("./Commands").forEach(async (file) => {
+  const command = await import(`./Commands/${file}`).then((c) => c.default);
+  client.commands.set(command.name, command);
+});
 
 //! ready
 client.on("ready", () => {
@@ -49,92 +41,74 @@ client.on("ready", () => {
 });
 
 //! messageCreate
+const prefix = process.env.prefix;
 client.on("messageCreate", (message) => {
   if (!message.guild) return;
+  if (!message.content.startsWith(prefix)) return;
 
-  if (message.content.startsWith("!logkanalı")) {
-    const msg = message.content.split("!logkanalı")[1].trim();
-    if (msg === "ekle") {
-      logChannel.push(message.channelId);
-      message.reply(
-        `<#${message.channelId}> text kanalı log alınmak üzere ayarlandı!!`
-      );
-    } else if (msg === "sil") {
-      let index = logChannel.indexOf(message.channelId);
-      if (index !== -1) {
-        logChannel.splice(index, 1);
-        message.reply(
-          `<#${message.channelId}> text kanalında artık log alınmayacak!!`
-        );
-      }
-    }
-  }
+  const args = message.content.slice(prefix.length).trim().split(" ");
+  const commandName = args.shift().toLowerCase();
+  const command = client.commands.get(commandName);
 
-  if (message.content.startsWith("!enayi")) {
-    const msg = message.content.split("!enayi")[1].trim();
-    if (msg.startsWith("ekle")) {
-      const tag = msg.split("ekle")[1].trim();
+  if (!command) return;
 
-      if (!enayi.some((name) => name.tag === tag)) {
-        enayi.push({
-          tag: tag,
-        });
-
-        message.reply(`${tag} isimli kullanıcı izleme listesine eklendi!!!`);
-      }
-    } else if (msg.startsWith("sil")) {
-      const tag = msg.split("sil")[1].trim();
-
-      let index = enayi.findIndex((v) => v.tag === tag);
-      if (index !== -1) {
-        enayi.splice(index, 1);
-
-        message.reply(`${tag} isimli kullanıcı artık izlenmiyor!!!`);
-      }
-    }
+  try {
+    command.komutExecute(client, message, args);
+  } catch (error) {
+    console.error(error);
+    message.reply("Bu komutta hata meydana geldi!!");
   }
 });
 
 //!voiceStateUpdate
 client.on("voiceStateUpdate", (oldState, newState) => {
   if (newState.channelId != oldState.channelId) {
-    let index = enayi.findIndex((v) => v.tag === `<@${newState.id}>`);
+    let index = client.enayi.findIndex((v) => v.tag === `<@${newState.id}>`);
     if (!(index == -1)) {
-      enayi[index] = {
-        ...enayi[index],
+      client.enayi[index] = {
+        ...client.enayi[index],
         joinnedChannelId: newState.channelId,
         disconnectedChannledId: oldState.channelId,
       };
 
-      logChannel.forEach((value) => {
+      client.logChannel.forEach((value) => {
         const channel = client.channels.cache.get(value);
+        const bilgi = new MessageEmbed();
 
-        if (enayi[index].joinnedChannelId == null) {
+        if (client.enayi[index].joinnedChannelId == null) {
           //çikis yapilan kisim
-          channel.send(
-            `${enayi[index].tag} isimli kullanıcı <#${
-              enayi[index].disconnectedChannledId
-            }> isimli kanaldan ${getDate()} tarihinde çıkış yaptı`
-          );
-        } else if (enayi[index].disconnectedChannledId == null) {
+          bilgi
+            .setDescription(
+              `${client.enayi[index].tag} isimli kullanıcı <#${client.enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı.`
+            )
+            .setTimestamp()
+            .setColor("#d43535");
+          channel.send({ embeds: [bilgi] });
+        } else if (client.enayi[index].disconnectedChannledId == null) {
           // giris yapilan kisim
-          channel.send(
-            `${enayi[index].tag} isimli kullanıcı <#${
-              enayi[index].joinnedChannelId
-            }> isimli kanala ${getDate()} tarihinde giriş yaptı`
-          );
+          bilgi
+            .setDescription(
+              `${client.enayi[index].tag} isimli kullanıcı <#${client.enayi[index].joinnedChannelId}> isimli kanala giriş yaptı.`
+            )
+            .setTimestamp()
+            .setColor("#37de48");
+          channel.send({ embeds: [bilgi] });
         } else {
           //yer degisilen kisim
-          channel.send(
-            `${enayi[index].tag} isimli kullanıcı <#${
-              enayi[index].disconnectedChannledId
-            }> isimli kanaldan ${getDate()} tarihinde çıkış yaptı`
-          );
-          channel.send(
-            `${enayi[index].tag} isimli kullanıcı <#${
-              enayi[index].joinnedChannelId
-            }> isimli kanala ${getDate()} tarihinde giriş yaptı`
-          );
+          bilgi
+            .setDescription(
+              `${client.enayi[index].tag} isimli kullanıcı <#${client.enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı.`
+            )
+            .setTimestamp()
+            .setColor("#d43535");
+          channel.send({ embeds: [bilgi] });
+          bilgi
+            .setDescription(
+              `${client.enayi[index].tag} isimli kullanıcı <#${client.enayi[index].joinnedChannelId}> isimli kanala giriş yaptı.`
+            )
+            .setTimestamp()
+            .setColor("#37de48");
+          channel.send({ embeds: [bilgi] });
         }
       });
     }
