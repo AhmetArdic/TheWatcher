@@ -1,7 +1,8 @@
-import { Client } from "discord.js";
+import { Client, TextChannel } from "discord.js";
 import "dotenv/config";
 
 const enayi = [];
+var logChannel;
 
 const client = new Client({
   intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"], //* istedigimiz instentsler icin array kullanabiliriz
@@ -36,7 +37,7 @@ client.on("messageCreate", (message) => {
   if (!message.guild) return;
 
   if (message.content === "!logkanalı") {
-    var logChannel = message.channelId;
+    logChannel = client.channels.cache.get(message.channelId);
   }
 
   if (message.content.startsWith("!enayi")) {
@@ -62,20 +63,20 @@ client.on("voiceStateUpdate", (oldState, newState) => {
 
       if (enayi[index].joinnedChannelId == null) {
         //çikis yapilan kisim
-        console.log(
+        logChannel.send(
           `${enayi[index].tag} isimli kullanıcı <#${enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı`
         );
       } else if (enayi[index].disconnectedChannledId == null) {
         // giris yapilan kisim
-        console.log(
+        logChannel.send(
           `${enayi[index].tag} isimli kullanıcı <#${enayi[index].joinnedChannelId}> isimli kanala giriş yaptı`
         );
       } else {
         //yer degisilen kisim
-        console.log(
+        logChannel.send(
           `${enayi[index].tag} isimli kullanıcı <#${enayi[index].joinnedChannelId}> isimli kanala giriş yaptı`
         );
-        console.log(
+        logChannel.send(
           `${enayi[index].tag} isimli kullanıcı <#${enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı`
         );
       }
