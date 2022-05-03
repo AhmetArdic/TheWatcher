@@ -59,9 +59,7 @@ client.on("messageCreate", (message) => {
       message.reply(
         `<#${message.channelId}> text kanalı log alınmak üzere ayarlandı!!`
       );
-    }
-
-    if (msg === "sil") {
+    } else if (msg === "sil") {
       let index = logChannel.indexOf(message.channelId);
       if (index !== -1) {
         logChannel.splice(index, 1);
@@ -73,11 +71,26 @@ client.on("messageCreate", (message) => {
   }
 
   if (message.content.startsWith("!enayi")) {
-    const tag = message.content.split("!enayi")[1].trim();
-    if (!enayi.some((name) => name.tag === tag)) {
-      enayi.push({
-        tag: tag,
-      });
+    const msg = message.content.split("!enayi")[1].trim();
+    if (msg.startsWith("ekle")) {
+      const tag = msg.split("ekle")[1].trim();
+
+      if (!enayi.some((name) => name.tag === tag)) {
+        enayi.push({
+          tag: tag,
+        });
+
+        message.reply(`${tag} isimli kullanıcı izleme listesine eklendi!!!`);
+      }
+    } else if (msg.startsWith("sil")) {
+      const tag = msg.split("sil")[1].trim();
+
+      let index = enayi.findIndex((v) => v.tag === tag);
+      if (index !== -1) {
+        enayi.splice(index, 1);
+
+        message.reply(`${tag} isimli kullanıcı artık izlenmiyor!!!`);
+      }
     }
   }
 });
