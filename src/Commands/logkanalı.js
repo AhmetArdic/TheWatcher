@@ -1,3 +1,5 @@
+import { MessageEmbed } from "discord.js";
+
 export default {
   name: "logkanalı",
   komutExecute(client, message, args) {
@@ -29,9 +31,14 @@ export default {
       }
     }
     else if(args[0] === "liste"){
+      const logChannelList = new MessageEmbed();
       let logChannelName = "";
       logChannel.forEach((l) => (logChannelName += `<#${l}>\n`));
-      message.reply(logChannelName + "isimli kanallara log alınıyor!!");
+      logChannelList
+        .setTitle("Log alınan kanallar")
+        .setDescription(logChannelName)
+        .setColor("#329dc7");
+      message.reply({embeds: [logChannelList]});
     }
   },
 };

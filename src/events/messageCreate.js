@@ -6,12 +6,12 @@ export default (client) => {
     if (!message.guild) return;
     if (!message.content.startsWith(prefix)) return;
 
+    //command role control
     const authorRoles = [...message.member.roles.cache.keys()];
     const filteredArray = authorRoles.filter((value) =>
       commandRoleIds.includes(value)
     );
 
-    //command role control
     if (!filteredArray.length) {
       message.reply("Bu komutu kullanmanız için gerekli yetkiniz yok!!!");
       return;

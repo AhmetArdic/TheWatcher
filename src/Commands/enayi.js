@@ -1,3 +1,5 @@
+import { MessageEmbed } from "discord.js";
+
 export default {
   name: "enayi",
   komutExecute(client, message, args) {
@@ -9,26 +11,41 @@ export default {
     const enayi = client.enayi;
 
     if (args[0] === "ekle") {
-      if (!enayi.some((name) => name.tag === args[1])) {
-        enayi.push({
-          tag: args[1],
-        });
+      args.shift();
+      let replyMessage = "";
 
-        message.reply(`${args[1]} isimli enayi takip ediliyor!!!`);
-      } else {
-        message.reply(`${args[1]} isimli enayi zaten takip ediliyor!!!`);
-      }
+      args.forEach((e) => {
+        if (!enayi.some((name) => name.tag === e)) {
+          enayi.push({
+            tag: e,
+          });
+          replyMessage += `${e} isimli enayi takip ediliyor!!!\n`;
+        } else {
+          replyMessage += `${e} isimli enayi ZATEN takip ediliyor!!!\n`;
+        }
+      });
+      message.reply(replyMessage);
     } else if (args[0] === "sil") {
-      let index = enayi.findIndex((v) => v.tag === args[1]);
-      if (index !== -1) {
-        enayi.splice(index, 1);
+      args.shift();
+      let replyMessage = "";
 
-        message.reply(`${args[1]} isimli enayi artık serbest bırakıldı!!!`);
-      }
+      args.forEach((s) => {
+        let index = enayi.findIndex((v) => v.tag === s);
+        if (index !== -1) {
+          enayi.splice(index, 1);
+          replyMessage += `${s} isimli enayi artık serbest bırakıldı!!!\n`;
+        }
+      });
+      message.reply(replyMessage);
     } else if (args[0] === "liste") {
+      const enayiList = new MessageEmbed();
       let enayiName = "";
       enayi.forEach((e) => (enayiName += e.tag + "\n"));
-      message.reply(enayiName + "isimli enayiler takip ediliyor!!");
+      enayiList
+        .setTitle("Takip edilenler")
+        .setDescription(enayiName)
+        .setColor("#329dc7");
+      message.reply({ embeds: [enayiList] });
     }
   },
 };
