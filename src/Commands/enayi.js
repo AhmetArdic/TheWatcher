@@ -1,7 +1,11 @@
 export default {
   name: "enayi",
   komutExecute(client, message, args) {
-    if (args[0] !== "ekle" && args[0] !== "sil") return;
+    if (args[0] !== "ekle" && args[0] !== "sil" && args[0] !== "liste") {
+      //TODO: daha otomatik kontrol
+      message.reply("Komuta verilen argumanlar hatalı!!");
+      return;
+    }
     const enayi = client.enayi;
 
     if (args[0] === "ekle") {
@@ -21,6 +25,10 @@ export default {
 
         message.reply(`${args[1]} isimli enayi artık serbest bırakıldı!!!`);
       }
+    } else if (args[0] === "liste") {
+      let enayiName = "";
+      enayi.forEach((e) => (enayiName += e.tag + "\n"));
+      message.reply(enayiName + "isimli enayiler takip ediliyor!!");
     }
   },
 };

@@ -1,7 +1,11 @@
 export default {
   name: "logkanalı",
   komutExecute(client, message, args) {
-    if (args[0] !== "ekle" && args[0] !== "sil") return;
+    if (args[0] !== "ekle" && args[0] !== "sil" && args[0] !== "liste") {
+      //TODO: daha otomatik kontrol
+      message.reply("Komuta verilen argumanlar hatalı!!");
+      return;
+    }
     const logChannel = client.logChannel;
 
     if (args[0] === "ekle") {
@@ -23,6 +27,11 @@ export default {
           `<#${message.channelId}> kanalında artık log alınmayacak!!`
         );
       }
+    }
+    else if(args[0] === "liste"){
+      let logChannelName = "";
+      logChannel.forEach((l) => (logChannelName += `<#${l}>\n`));
+      message.reply(logChannelName + "isimli kanallara log alınıyor!!");
     }
   },
 };

@@ -21,7 +21,10 @@ export default (client) => {
     const commandName = args.shift().toLowerCase();
     const command = client.commands.get(commandName);
 
-    if (!command) return;
+    if (!command) {
+      message.reply("Böyle bir komut bulunmuyor!!!");
+      return;
+    }
 
     try {
       command.komutExecute(client, message, args);
