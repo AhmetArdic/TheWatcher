@@ -6,7 +6,7 @@ const client = new Client({
   intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"], //* istedigimiz instentsler icin array kullanabiliriz
   presence: {
     status: "dnd", //do not disturb
-    //activities: [{ name: "müconun deliğiyle", type: "PLAYING" }],
+    activities: [{ name: "Hepinizi", type: "WATCHING" }],
   },
 });
 client.login(process.env.TOKEN);

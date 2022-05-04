@@ -1,18 +1,18 @@
 export default (client) => {
   const prefix = process.env.PREFIX;
-  const commandRole = process.env.COMMANDROLE;
+  const commandRoleIds = JSON.parse(process.env.COMMANDROLEID).roleid;
 
   client.on("messageCreate", (message) => {
     if (!message.guild) return;
     if (!message.content.startsWith(prefix)) return;
 
+    const authorRoles = [...message.member.roles.cache.keys()];
+    const filteredArray = authorRoles.filter((value) =>
+      commandRoleIds.includes(value)
+    );
+
     //command role control
-    if (
-      !(
-        message.member.roles.cache.find((value) => value.name === commandRole)
-          ?.name === commandRole
-      )
-    ) {
+    if (!filteredArray.length) {
       message.reply("Bu komutu kullanmanız için gerekli yetkiniz yok!!!");
       return;
     }
