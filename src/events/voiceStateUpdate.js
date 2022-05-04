@@ -13,6 +13,10 @@ export default (client) => {
           disconnectedChannledId: oldState.channelId,
         };
 
+        const enayiName = client.users.cache.find(
+          (e) => e.id === newState.id
+        ).username;
+
         logChannel.forEach((value) => {
           const channel = client.channels.cache.get(value);
           const bilgi = new MessageEmbed();
@@ -20,6 +24,7 @@ export default (client) => {
           if (enayi[index].joinnedChannelId == null) {
             //çikis yapilan kisim
             bilgi
+              .setTitle(enayiName)
               .setDescription(
                 `${enayi[index].tag} isimli kullanıcı <#${enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı.`
               )
@@ -29,6 +34,7 @@ export default (client) => {
           } else if (enayi[index].disconnectedChannledId == null) {
             // giris yapilan kisim
             bilgi
+              .setTitle(enayiName)
               .setDescription(
                 `${enayi[index].tag} isimli kullanıcı <#${enayi[index].joinnedChannelId}> isimli kanala giriş yaptı.`
               )
@@ -38,6 +44,7 @@ export default (client) => {
           } else {
             //yer degisilen kisim
             bilgi
+              .setTitle(enayiName)
               .setDescription(
                 `${enayi[index].tag} isimli kullanıcı <#${enayi[index].disconnectedChannledId}> isimli kanaldan çıkış yaptı.`
               )
@@ -45,6 +52,7 @@ export default (client) => {
               .setColor("#d43535");
             channel.send({ embeds: [bilgi] });
             bilgi
+              .setTitle(enayiName)
               .setDescription(
                 `${enayi[index].tag} isimli kullanıcı <#${enayi[index].joinnedChannelId}> isimli kanala giriş yaptı.`
               )
