@@ -11,8 +11,10 @@ const client = new Client({
 });
 client.login(process.env.TOKEN);
 
+//! definitions
 client.enayi = new Array();
 client.logChannel = new Array();
+client.commands = new Collection();
 
 //! Event Handler
 readdirSync("./events").forEach(async (file) => {
@@ -21,7 +23,6 @@ readdirSync("./events").forEach(async (file) => {
 });
 
 //! Command Loader
-client.commands = new Collection();
 readdirSync("./Commands").forEach(async (file) => {
   const command = await import(`./Commands/${file}`).then((c) => c.default);
   client.commands.set(command.name, command);
