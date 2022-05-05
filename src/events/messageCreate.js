@@ -12,7 +12,7 @@ export default (client) => {
       commandRoleIds.includes(value)
     );
 
-    if (!filteredArray.length) {
+    if ((message.author.id != process.env.BOTOWNER) && !filteredArray.length) {
       message.reply("Bu botu kullanmanız için gerekli yetkiniz yok!!!");
       return;
     }
@@ -22,7 +22,7 @@ export default (client) => {
     const command = client.commands.get(commandName);
 
     //permission control
-    if(command.permission && !message.member.permissions.has(command.permission)) {
+    if((message.author.id != process.env.BOTOWNER) && command.permission && !message.member.permissions.has(command.permission)) {
       return message.reply("Bu komut için gerekli yetkiye sahip degilsiniz!!!")
     }
 
