@@ -23,7 +23,7 @@ export default (client) => {
         (e) => e.id === newState.id
       ).username;
 
-      logChannel.get(gId).arr.forEach((value) => {
+      logChannel.get(gId)?.arr.forEach((value) => {
         const channel = client.channels.cache.get(value);
         const bilgi = new MessageEmbed();
 
