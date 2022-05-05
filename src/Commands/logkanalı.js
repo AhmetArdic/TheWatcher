@@ -11,34 +11,56 @@ export default {
     const logChannel = client.logChannel;
 
     if (args[0] === "ekle") {
-      if (!logChannel.includes(message.channelId)) {
-        logChannel.push(message.channelId);
+      const g = logChannel.findKey((v, key) => key === message.guildId);
+      if (!g) {
+        //mesajin gonderildigi sunucu collectionda yok ise
+        logChannel.set(message.guildId, { arr: [message.channelId] });
         message.reply(
           `<#${message.channelId}> kanalı log alınmak üzere ayarlandı!!`
         );
       } else {
-        message.reply(
-          `<#${message.channelId}> kanalı zaten log alınmak üzere ayarlandı!!`
-        );
+        //var ise
+        if (!logChannel.get(g).arr.includes(message.channelId)) {
+          logChannel.get(g).arr.push(message.channelId);
+          message.reply(
+            `<#${message.channelId}> kanalı log alınmak üzere ayarlandı!!`
+          );
+        } else {
+          message.reply(
+            `<#${message.channelId}> kanalı zaten log alınmak üzere ayarlandı!!`
+          );
+        }
       }
     } else if (args[0] === "sil") {
-      let index = logChannel.indexOf(message.channelId);
+      let index = logChannel
+        .get(message.guildId)
+        .arr.indexOf(message.channelId);
       if (index !== -1) {
-        logChannel.splice(index, 1);
+        logChannel.get(message.guildId).arr.splice(index, 1);
         message.reply(
           `<#${message.channelId}> kanalında artık log alınmayacak!!`
         );
       }
-    }
-    else if(args[0] === "liste"){
+
+      if (!logChannel.get(message.guildId).arr.length) {
+        logChannel.delete(message.guildId);
+      }
+    } else if (args[0] === "liste") {
       const logChannelList = new MessageEmbed();
       let logChannelName = "";
-      logChannel.forEach((l) => (logChannelName += `<#${l}>\n`));
+      logChannel.forEach((value, key) => {
+        if (key !== message.guildId) return;
+
+        value.arr.forEach((l) => (logChannelName += `<#${l}>\n`));
+      });
+      if (logChannelName === "") {
+        logChannelName = "Log listesi boş!!!";
+      }
       logChannelList
         .setTitle("Log alınan kanallar")
         .setDescription(logChannelName)
         .setColor("#329dc7");
-      message.reply({embeds: [logChannelList]});
+      message.reply({ embeds: [logChannelList] });
     }
   },
 };

@@ -18,12 +18,12 @@ export default {
         const g = enayi.findKey((v, key) => key === message.guildId);
         if (!g) {
           //mesajin gonderildigi sunucu collectionda yok ise
-          enayi.set(message.guildId, {tag: [e]});
+          enayi.set(message.guildId, { arr: [{ tag: e }] });
           replyMessage += `${e} isimli enayi takip ediliyor!!!\n`;
         } else {
           //var ise
-          if (!enayi.get(g).tag.some((name) => name === e)) {
-            enayi.get(g).tag.push(e);
+          if (!enayi.get(g).arr.some((name) => name.tag === e)) {
+            enayi.get(g).arr.push({ tag: e });
             replyMessage += `${e} isimli enayi takip ediliyor!!!\n`;
           } else {
             replyMessage += `${e} isimli enayi ZATEN takip ediliyor!!!\n`;
@@ -36,21 +36,30 @@ export default {
       let replyMessage = "";
 
       args.forEach((s) => {
-        let index = enayi.get(message.guildId).tag.findIndex((v) => v === s);
+        let index = enayi
+          .get(message.guildId)
+          .arr.findIndex((v) => v.tag === s);
         if (index !== -1) {
-          enayi.get(message.guildId).tag.splice(index, 1);
+          enayi.get(message.guildId).arr.splice(index, 1);
           replyMessage += `${s} isimli enayi artık serbest bırakıldı!!!\n`;
         }
       });
       message.reply(replyMessage);
+
+      if (!enayi.get(message.guildId).arr.length) {
+        enayi.delete(message.guildId);
+      }
     } else if (args[0] === "liste") {
       const enayiList = new MessageEmbed();
       let enayiName = "";
       enayi.forEach((value, key) => {
-        if(key !== message.guildId) return;
+        if (key !== message.guildId) return;
 
-        value.tag.forEach(t => (enayiName += t + "\n"))
+        value.arr.forEach((t) => (enayiName += t.tag + "\n"));
       });
+      if (enayiName === "") {
+        enayiName = "Kimse takip edilmiyor!!!";
+      }
       enayiList
         .setTitle("Takip edilenler")
         .setDescription(enayiName)
