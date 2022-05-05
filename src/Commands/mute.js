@@ -9,6 +9,6 @@ export default {
     client.guilds.cache
       .find((g) => g.id === message.guildId)
       .members.cache.find((m) => `<@${m.user.id}>` === args[0])
-      .voice.setMute(1);
+      .voice.setMute(1).catch(e => {console.log("!mute HATA"); console.log(e)});
   },
 };

@@ -4,25 +4,25 @@ export default {
   komutExecute(client, message, args) {
     let memberVoiceState;
     if (!args.length) {
-      return message.reply("Geçersiz arguman, !moveto [channel-tag] [user-tag(optional)]");
+      return message.reply(
+        "Geçersiz arguman\n!moveto [channel-tag] [user-tag(optional)]"
+      );
     } else if (args.length < 2) {
       memberVoiceState = client.guilds.cache
         .find((g) => g.id === message.guildId)
         .members.cache.find(
           (m) => `<@${m.user.id}>` === `<@${message.author.id}>`
         ).voice;
-    }
-    else{
+    } else {
       memberVoiceState = client.guilds.cache
         .find((g) => g.id === message.guildId)
-        .members.cache.find(
-          (m) => `<@${m.user.id}>` === args[1]
-        ).voice;
+        .members.cache.find((m) => `<@${m.user.id}>` === args[1]).voice;
     }
 
-    var voiceChannel = client.guilds.cache.find(g => g.id === message.guildId).channels.cache.find(c => `<#${c.id}>` === args[0]);
+    var voiceChannel = client.guilds.cache
+      .find((g) => g.id === message.guildId)
+      .channels.cache.find((c) => `<#${c.id}>` === args[0]);
 
-    memberVoiceState.setChannel(voiceChannel);
-
+    memberVoiceState.setChannel(voiceChannel).catch(e => {console.log("!moveto HATA"); console.log(e)});
   },
 };
