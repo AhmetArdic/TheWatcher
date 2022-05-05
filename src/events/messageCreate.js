@@ -13,13 +13,18 @@ export default (client) => {
     );
 
     if (!filteredArray.length) {
-      message.reply("Bu komutu kullanmanız için gerekli yetkiniz yok!!!");
+      message.reply("Bu botu kullanmanız için gerekli yetkiniz yok!!!");
       return;
     }
 
     const args = message.content.slice(prefix.length).trim().split(/ +/); //argumanların arasındaki birden fazla boslugu dikkate almıyor
     const commandName = args.shift().toLowerCase();
     const command = client.commands.get(commandName);
+
+    //permission control
+    if(command.permission && !message.member.permissions.has(command.permission)) {
+      return message.reply("Bu komut için gerekli yetkiye sahip degilsiniz!!!")
+    }
 
     if (!command) {
       message.reply("Böyle bir komut bulunmuyor!!!");
