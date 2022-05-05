@@ -12,8 +12,8 @@ const client = new Client({
 client.login(process.env.TOKEN);
 
 //! definitions
-client.enayi = new Array();
-client.logChannel = new Array();
+client.enayi = new Collection()
+client.logChannel = new Collection();
 client.commands = new Collection();
 
 //! Event Handler
