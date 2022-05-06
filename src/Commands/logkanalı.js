@@ -41,10 +41,6 @@ export default {
           `<#${message.channelId}> kanalında artık log alınmayacak!!`
         );
       }
-
-      if (!logChannel.get(message.guildId).arr.length) {
-        logChannel.delete(message.guildId);
-      }
     } else if (args[0] === "liste") {
       const logChannelList = new MessageEmbed();
       let logChannelName = "";
@@ -61,6 +57,10 @@ export default {
         .setDescription(logChannelName)
         .setColor("#329dc7");
       message.reply({ embeds: [logChannelList] });
+    }
+
+    if (!logChannel.get(message.guildId).arr.length) {
+      logChannel.delete(message.guildId);
     }
   },
 };

@@ -50,10 +50,6 @@ export default {
         }
       });
       message.reply(replyMessage);
-
-      if (!enayi.get(message.guildId).arr.length) {
-        enayi.delete(message.guildId);
-      }
     } else if (args[0] === "liste") {
       const enayiList = new MessageEmbed();
       let enayiName = "";
@@ -70,6 +66,10 @@ export default {
         .setDescription(enayiName)
         .setColor("#329dc7");
       message.reply({ embeds: [enayiList] });
+    }
+
+    if (!enayi.get(message.guildId).arr.length) {
+      enayi.delete(message.guildId);
     }
   },
 };
