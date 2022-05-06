@@ -73,7 +73,7 @@ export default {
       message.reply({ embeds: [enayiList] });
     }
 
-    if (!enayi.get(message.guildId).arr.length) {
+    if (!enayi.get(message.guildId)?.arr.length) {
       enayi.delete(message.guildId);
     }
   },
