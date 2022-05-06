@@ -41,6 +41,11 @@ export default {
       let replyMessage = "";
 
       args.forEach((s) => {
+        if (!(e.startsWith("<@") && e.endsWith(">")))
+        return message.reply(
+          "Hatalı kullanıcı ismi girildi, hatalı kullanıcı ID " + e
+        );
+
         let index = enayi
           .get(message.guildId)
           .arr.findIndex((v) => v.tag === s);
