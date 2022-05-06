@@ -59,7 +59,7 @@ export default {
       message.reply({ embeds: [logChannelList] });
     }
 
-    if (!logChannel.get(message.guildId).arr.length) {
+    if (!logChannel.get(message.guildId)?.arr.length) {
       logChannel.delete(message.guildId);
     }
   },
