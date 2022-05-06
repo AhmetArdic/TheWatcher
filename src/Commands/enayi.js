@@ -15,6 +15,11 @@ export default {
       let replyMessage = "";
 
       args.forEach((e) => {
+        if (!(e.startsWith("<@") && e.endsWith(">")))
+          return message.reply(
+            "Hatalı kullanıcı ismi girildi, hatalı kullanıcı ID " + e
+          );
+
         const g = enayi.findKey((v, key) => key === message.guildId);
         if (!g) {
           //mesajin gonderildigi sunucu collectionda yok ise
